@@ -73,15 +73,15 @@ class ShapleyAnalyser:
     
     def getSE(self):
         print('SE')
-        for exp in self.exps:   print('exp',self.Evaluate([exp],self.exps))
+        for exp in self.exps:   print(exp,self.Evaluate([exp],self.exps))
             
     def getLOO(self):
         print('LOO')
-        for exp in self.exps:   print('exp',self.Evaluate(list(set(self.exps)-set([exp])),self.exps))
+        for exp in self.exps:   print(exp,self.Evaluate(list(set(self.exps)-set([exp])),self.exps))
         
     def getDifficulty(self):
         print('Difficulty')
-        for exp in self.exps:   print('exp',self.Evaluate(self.exps),[exp])
+        for exp in self.exps:   print(exp,self.Evaluate(self.exps,[exp]))
         
     '''return shapley values of idiomatic expressions '''
     def getShapleyValues(self):
