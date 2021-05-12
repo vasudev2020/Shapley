@@ -94,19 +94,19 @@ def main():
     td =[getTopicDistSim(T,'all') for T in range(10,100,10)]
     mtd = [mean(a) for a in zip(*td)]
     print('All')
-    print(','.join(mtd))
+    print(mtd)
     print(getCorr(sv,mtd))
     
     td =[getTopicDistSim(T,'idiom') for T in range(10,100,10)]
     mtd = [mean(a) for a in zip(*td)]
     print('Idiom')
-    print(','.join(mtd))
+    print(mtd)
     print(getCorr(sv,mtd))
     
     td =[getTopicDistSim(T,'literal') for T in range(10,100,10)]
     mtd = [mean(a) for a in zip(*td)]
     print('Literal')
-    print(','.join(mtd))
+    print(mtd)
     print(getCorr(sv,mtd))
     
-for _ in range(5):  main()
+for _ in range(1):  main()
