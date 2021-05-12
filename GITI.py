@@ -117,7 +117,7 @@ class GITI:
         SV_score = [0.0]*20
         RO_score = [0.0]*20
         
-        trials = 2
+        trials = 10
         p = list(range(len(self.exps)))
         for _ in range(trials):
             random.shuffle(p)
@@ -131,7 +131,7 @@ class GITI:
                 for i in range(20): LO_score[i]+=self.Evaluate(lo_train_exps[:i+1],test_exps)
                 for i in range(20): SE_score[i]+=self.Evaluate(se_train_exps[:i+1],test_exps)
                 for i in range(20): SV_score[i]+=self.Evaluate(sv_train_exps[:i+1],test_exps)
-                for i in range(20):    RO_score[i]+=self.Evaluate(train_exps[:i+1],test_exps)
+                for i in range(20): RO_score[i]+=self.Evaluate(train_exps[:i+1],test_exps)
                 
         for i in range(20):
             LO_score[i]/=trials*5

@@ -8,7 +8,7 @@ Created on Wed May 12 13:20:17 2021
 
 from collections import defaultdict
 #import spacy
-from ShapleyAnalyser import ShapleyAnalyser
+#from ShapleyAnalyser import ShapleyAnalyser
 from TopicModel import TopicModel
 from statistics import mean
 from scipy.stats import pearsonr,spearmanr,entropy
@@ -59,7 +59,7 @@ TM = TopicModel()
 exps = [exp for exp in Data]
 
 
-def getTopicDistSim(T):
+def getTopicDistSim(T,opt):
     TM.train(traintext,T)
     
     testtext = [sent for exp in Data for sent in Data[exp]]
@@ -70,8 +70,10 @@ def getTopicDistSim(T):
 
     dist_sim = []
     for exp in exps:
-        #exp_topics = TM.topicModel([sent for sent in Data[exp]])
-        exp_topics = TM.topicModel([sent for sent,lb in zip(Data[exp],Labels[exp]) if lb==0])
+        if opt=='all':  exp_topics = TM.topicModel([sent for sent in Data[exp]])
+        if opt=='idiom':    exp_topics = TM.topicModel([sent for sent,lb in zip(Data[exp],Labels[exp]) if lb==1])
+        if opt=='literal':    exp_topics = TM.topicModel([sent for sent,lb in zip(Data[exp],Labels[exp]) if lb==0])
+
         exp_topic_dist = [0]*T
         for t in exp_topics:    exp_topic_dist[t]+=1
         exp_topic_dist = [a/sum(exp_topic_dist) for a in exp_topic_dist]
@@ -88,7 +90,23 @@ sv = [0.0293,0.0419,0.0534,0.0346,0.0374,0.0283,0.0342,0.0335,0.0365,0.0418,0.04
 
 #for T in range(10,100,10):
 #    print(getCorr(sv,getTopicDistSim(T)))
-td =[getTopicDistSim(T) for T in range(10,100,10)]
-mtd = [mean(a) for a in zip(*td)]
-print(mtd)
-print(getCorr(sv,mtd))
+def main():
+    td =[getTopicDistSim(T,'all') for T in range(10,100,10)]
+    mtd = [mean(a) for a in zip(*td)]
+    print('All')
+    print(','.join(mtd))
+    print(getCorr(sv,mtd))
+    
+    td =[getTopicDistSim(T,'idiom') for T in range(10,100,10)]
+    mtd = [mean(a) for a in zip(*td)]
+    print('Idiom')
+    print(','.join(mtd))
+    print(getCorr(sv,mtd))
+    
+    td =[getTopicDistSim(T,'literal') for T in range(10,100,10)]
+    mtd = [mean(a) for a in zip(*td)]
+    print('Literal')
+    print(','.join(mtd))
+    print(getCorr(sv,mtd))
+    
+for _ in range(5):  main()

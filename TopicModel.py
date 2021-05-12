@@ -74,7 +74,7 @@ class TopicModel:
         
     def train(self,data,num_topics):
         corpus,data_lemmatized = self.createDictCorpus(data)
-        self.lsi_model = gensim.models.LsiModel(corpus=corpus, num_topics=num_topics, id2word=self.id2word)
+        self.lsi_model = gensim.models.LsiModel(corpus=corpus, num_topics=num_topics, id2word=self.id2word,power_iters=100)
         
     def topicModel(self,data):
                 

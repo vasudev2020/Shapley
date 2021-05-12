@@ -1,15 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed May  5 17:54:58 2021
+Created on Wed May 12 15:38:01 2021
 
 @author: vasu
 """
+from GITI import GITI
 from collections import defaultdict
-import spacy
-from ShapleyAnalyser import ShapleyAnalyser
-from TopicModel import TopicModel
-from statistics import mean
 
 def LoadVNC(cutoff):        
     with open("../Data/ID/cook_dataset.tok", "r") as fp:
@@ -40,35 +37,23 @@ def LoadVNC(cutoff):
     assert len(Data)==len(Labels)
 
     return Data,Labels
-
-def LoadVNCTexts():
-    with open("../Data/ID/cook_dataset.tok", "r") as fp:
-        dataset = fp.readlines()
-    dataset = [d.strip().split('||')[3].replace(' &apos;','\'').lower() for d in dataset]
-    return dataset
-    
-
+        
 Data,Labels = LoadVNC(5) 
-text = LoadVNCTexts() 
+giti=GITI(Data,Labels)
 
-TM = TopicModel()  
-TC=defaultdict(list)  
-for T in range(5,50,5):
-    TM.train(text,T)
-    for exp in Data:  
-        topics = TM.topicModel(Data[exp])
-        TC[exp].append(len(set(topics))/T)
+sv_order = ['blow whistle','pull plug','hit wall','pull weight','make mark','blow trumpet','hit roof','hold fire','find foot','take heart','hit road','take root','pull leg','kick heel','cut figure','make pile','make hay','get wind','make hit','have word','blow top','make face','get sack','make scene','lose head','see star']
+se_order = ['blow whistle','hold fire','pull plug','pull weight','make mark','hit wall','blow trumpet','make pile','hit roof','kick heel','hit road','make hay','pull leg','take heart','get wind','make hit','take root','cut figure','find foot','get sack','blow top','have word','make scene','lose head','make face','see star']
+lo_order = ['see star','blow whistle','hit wall','make face','have word','make scene','make mark','blow top','get wind','pull leg','make pile','make hay','hold fire','make hit','take root','get sack','pull plug','lose head','take heart','hit road','hit roof','cut figure','blow trumpet','pull weight','find foot','kick heel']
+giti.getUnseenExpResults(lo_order,se_order,sv_order)
 
-SA = ShapleyAnalyser(Data,Labels)
+'''
+giti.getSE()
 
-SA.getSE()
-SA.getLOO()
-SA.getDifficulty()
+giti.getLOO()
 
-sv = SA.getShapleyValues()
+giti.getDifficulty()
 
-#TM.train([sent for exp in Data for sent in Data[exp]],T)
+sv = giti.getShapleyValues()   
 for exp in Data:  
-    topics = TM.topicModel(Data[exp])
-    print(exp,sv[exp],len(Labels[exp]),sum(Labels[exp]),len(Labels[exp])-sum(Labels[exp]),mean(TC[exp]))
-
+    print(exp,sv[exp],len(Labels[exp]),sum(Labels[exp]),len(Labels[exp])-sum(Labels[exp]))
+'''
