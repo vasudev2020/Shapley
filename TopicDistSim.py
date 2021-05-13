@@ -86,27 +86,28 @@ def getCorr(a,b):
     assert len(a)==len(b)
     return round(pearsonr(a,b)[0],4), round(spearmanr(a,b)[0],4)
 
+
+def getMeanTopicDistSim(opt):
+    td =[getTopicDistSim(T,opt) for T in range(10,100,10)]
+    mtd = [mean(a) for a in zip(*td)]
+    return mtd
+    
 sv = [0.0293,0.0419,0.0534,0.0346,0.0374,0.0283,0.0342,0.0335,0.0365,0.0418,0.0458,0.0401,0.0349,0.0209,0.0288,0.0345,0.0338,0.0436,0.0346,0.0280,0.0353,0.0466,0.0449,0.0201,0.0368,0.0359]
 
-#for T in range(10,100,10):
-#    print(getCorr(sv,getTopicDistSim(T)))
-def main():
-    td =[getTopicDistSim(T,'all') for T in range(10,100,10)]
-    mtd = [mean(a) for a in zip(*td)]
-    print('All')
-    print(mtd)
-    print(getCorr(sv,mtd))
-    
-    td =[getTopicDistSim(T,'idiom') for T in range(10,100,10)]
-    mtd = [mean(a) for a in zip(*td)]
-    print('Idiom')
-    print(mtd)
-    print(getCorr(sv,mtd))
-    
-    td =[getTopicDistSim(T,'literal') for T in range(10,100,10)]
-    mtd = [mean(a) for a in zip(*td)]
-    print('Literal')
-    print(mtd)
-    print(getCorr(sv,mtd))
-    
-for _ in range(1):  main()
+s = [getMeanTopicDistSim('all') for _ in range(5)]
+ms = [mean(a) for a in zip(*s)]
+print('All')
+print(ms)
+print(getCorr(sv,ms))
+
+s = [getMeanTopicDistSim('idiom') for _ in range(5)]
+ms = [mean(a) for a in zip(*s)]
+print('Idiom')
+print(ms)
+print(getCorr(sv,ms))
+
+s = [getMeanTopicDistSim('literal') for _ in range(5)]
+ms = [mean(a) for a in zip(*s)]
+print('Literal')
+print(ms)
+print(getCorr(sv,ms))

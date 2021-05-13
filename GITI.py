@@ -11,6 +11,7 @@ from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
 from sklearn.model_selection import StratifiedKFold
 from sklearn.neural_network import MLPClassifier
 from scipy import stats
+from statistics import mean,stdev
 import warnings
 from tqdm import tqdm
 from warnings import filterwarnings
@@ -112,12 +113,16 @@ class GITI:
         #SE = ['pull plug','get wind','blow trumpet','hit road','kick heel','pull weight','blow whistle','hit roof','take heart','make pile','make hay','make mark','get sack','pull punch','blow top','cut figure','have word','lose thread','find foot','get nod','pull leg','make scene','make face','hold fire','lose head','hit wall','make hit','see star']
         #SV = ['make mark','blow whistle','pull plug','blow trumpet','pull weight','make hay','hit roof','get wind','take heart','hit road','make pile','get sack','find foot','kick heel','make face','make scene','pull punch','blow top','lose thread','get nod','cut figure','pull leg','have word','hold fire','lose head','hit wall','make hit','see star']
 
-        LO_score = [0.0]*20
-        SE_score = [0.0]*20
-        SV_score = [0.0]*20
-        RO_score = [0.0]*20
+        #LO_score = [0.0]*20
+        #SE_score = [0.0]*20
+        #SV_score = [0.0]*20
+        #RO_score = [0.0]*20
+        LO_score = [[] for _ in range(20)]
+        SE_score = [[] for _ in range(20)]
+        SV_score = [[] for _ in range(20)]
+        RO_score = [[] for _ in range(20)]
         
-        trials = 10
+        trials = 2
         p = list(range(len(self.exps)))
         for _ in range(trials):
             random.shuffle(p)
@@ -127,12 +132,18 @@ class GITI:
                 lo_train_exps = [exp for exp in LO if exp in train_exps]
                 se_train_exps = [exp for exp in SE if exp in train_exps]
                 sv_train_exps = [exp for exp in SV if exp in train_exps]
-                
+                '''
                 for i in range(20): LO_score[i]+=self.Evaluate(lo_train_exps[:i+1],test_exps)
                 for i in range(20): SE_score[i]+=self.Evaluate(se_train_exps[:i+1],test_exps)
                 for i in range(20): SV_score[i]+=self.Evaluate(sv_train_exps[:i+1],test_exps)
                 for i in range(20): RO_score[i]+=self.Evaluate(train_exps[:i+1],test_exps)
-                
+                '''
+                for i in range(20): LO_score[i].append(self.Evaluate(lo_train_exps[:i+1],test_exps))
+                for i in range(20): SE_score[i].append(self.Evaluate(se_train_exps[:i+1],test_exps))
+                for i in range(20): SV_score[i].append(self.Evaluate(sv_train_exps[:i+1],test_exps))
+                for i in range(20): RO_score[i].append(self.Evaluate(train_exps[:i+1],test_exps))
+         
+        '''
         for i in range(20):
             LO_score[i]/=trials*5
             SE_score[i]/=trials*5
@@ -143,7 +154,19 @@ class GITI:
         print('SE:',SE_score)
         print('SV:',SV_score)
         print('RO:',RO_score)
-                
+        '''
+        
+        print('LO',','.join([str(mean(a)) for a in LO_score]))
+        print('LO-std',','.join([str(stdev(a)) for a in LO_score]))
+        
+        print('SE',','.join([str(mean(a)) for a in SE_score]))
+        print('SE-std',','.join([str(stdev(a)) for a in SE_score]))
+        
+        print('SV',','.join([str(mean(a)) for a in SV_score]))
+        print('SV-std',','.join([str(stdev(a)) for a in SV_score]))
+        
+        print('RO',','.join([str(mean(a)) for a in RO_score]))
+        print('RO-std',','.join([str(stdev(a)) for a in RO_score]))
     
         
         
