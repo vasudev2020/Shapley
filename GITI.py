@@ -122,7 +122,7 @@ class GITI:
         SV_score = [[] for _ in range(20)]
         RO_score = [[] for _ in range(20)]
         
-        trials = 2
+        trials = 10
         p = list(range(len(self.exps)))
         for _ in range(trials):
             random.shuffle(p)
@@ -156,17 +156,15 @@ class GITI:
         print('RO:',RO_score)
         '''
         
-        print('LO',','.join([str(mean(a)) for a in LO_score]))
-        print('LO-std',','.join([str(stdev(a)) for a in LO_score]))
+        print('LO,',','.join([str(mean(a)) for a in LO_score]))
+        print('SE,',','.join([str(mean(a)) for a in SE_score]))        
+        print('SV,',','.join([str(mean(a)) for a in SV_score]))       
+        print('RO,',','.join([str(mean(a)) for a in RO_score]))
         
-        print('SE',','.join([str(mean(a)) for a in SE_score]))
-        print('SE-std',','.join([str(stdev(a)) for a in SE_score]))
-        
-        print('SV',','.join([str(mean(a)) for a in SV_score]))
-        print('SV-std',','.join([str(stdev(a)) for a in SV_score]))
-        
-        print('RO',','.join([str(mean(a)) for a in RO_score]))
-        print('RO-std',','.join([str(stdev(a)) for a in RO_score]))
+        print('LO-std,',','.join([str(stdev(a)) for a in LO_score]))
+        print('SV-std,',','.join([str(stdev(a)) for a in SV_score]))
+        print('SE-std,',','.join([str(stdev(a)) for a in SE_score]))
+        print('RO-std,',','.join([str(stdev(a)) for a in RO_score]))
     
         
         
