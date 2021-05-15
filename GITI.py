@@ -108,7 +108,8 @@ class GITI:
             #sh.append(V / (len(self.exps)*self.t))
         return SV
     
-    def getUnseenExpResults(self,LO,SE,SV):
+    #def getUnseenExpResults(self,LO,SE,SV):
+    def getUnseenExpResults(self,Orders):
         #LO = ['kick heel','have word','pull leg','make pile','blow whistle','get wind','make hay','blow trumpet','make face','hit road','pull punch','blow top','cut figure','get sack','get nod','see star','hit wall','hold fire','make hit','make scene','hit roof','pull plug','take heart','pull weight','make mark','lose thread','find foot','lose head']
         #SE = ['pull plug','get wind','blow trumpet','hit road','kick heel','pull weight','blow whistle','hit roof','take heart','make pile','make hay','make mark','get sack','pull punch','blow top','cut figure','have word','lose thread','find foot','get nod','pull leg','make scene','make face','hold fire','lose head','hit wall','make hit','see star']
         #SV = ['make mark','blow whistle','pull plug','blow trumpet','pull weight','make hay','hit roof','get wind','take heart','hit road','make pile','get sack','find foot','kick heel','make face','make scene','pull punch','blow top','lose thread','get nod','cut figure','pull leg','have word','hold fire','lose head','hit wall','make hit','see star']
@@ -117,9 +118,11 @@ class GITI:
         #SE_score = [0.0]*20
         #SV_score = [0.0]*20
         #RO_score = [0.0]*20
-        LO_score = [[] for _ in range(20)]
-        SE_score = [[] for _ in range(20)]
-        SV_score = [[] for _ in range(20)]
+        Scores = [[[] for _ in range(20)] for _ in range(len(Orders))]
+        
+        #LO_score = [[] for _ in range(20)]
+        #SE_score = [[] for _ in range(20)]
+        #SV_score = [[] for _ in range(20)]
         RO_score = [[] for _ in range(20)]
         
         trials = 10
@@ -129,33 +132,29 @@ class GITI:
             for fold in range(5):
                 test_exps = [self.exps[i] for i in p[fold*5:(fold+1)*5]]
                 train_exps = [self.exps[i] for i in p[:fold*5]+p[(fold+1)*5:]]
-                lo_train_exps = [exp for exp in LO if exp in train_exps]
-                se_train_exps = [exp for exp in SE if exp in train_exps]
-                sv_train_exps = [exp for exp in SV if exp in train_exps]
-                '''
-                for i in range(20): LO_score[i]+=self.Evaluate(lo_train_exps[:i+1],test_exps)
-                for i in range(20): SE_score[i]+=self.Evaluate(se_train_exps[:i+1],test_exps)
-                for i in range(20): SV_score[i]+=self.Evaluate(sv_train_exps[:i+1],test_exps)
-                for i in range(20): RO_score[i]+=self.Evaluate(train_exps[:i+1],test_exps)
-                '''
-                for i in range(20): LO_score[i].append(self.Evaluate(lo_train_exps[:i+1],test_exps))
-                for i in range(20): SE_score[i].append(self.Evaluate(se_train_exps[:i+1],test_exps))
-                for i in range(20): SV_score[i].append(self.Evaluate(sv_train_exps[:i+1],test_exps))
-                for i in range(20): RO_score[i].append(self.Evaluate(train_exps[:i+1],test_exps))
-         
-        '''
-        for i in range(20):
-            LO_score[i]/=trials*5
-            SE_score[i]/=trials*5
-            SV_score[i]/=trials*5
-            RO_score[i]/=trials*5
-            
-        print('LO:',LO_score)
-        print('SE:',SE_score)
-        print('SV:',SV_score)
-        print('RO:',RO_score)
-        '''
+                for j in range(20): RO_score[j].append(self.Evaluate(train_exps[:j+1],test_exps))
+                for i,order in enumerate(Orders):
+                    train_exps = [exp for exp in order if exp in train_exps]
+                    for j in range(20):
+                        Scores[i][j].append(self.Evaluate(train_exps[:j+1],test_exps))
+                        
+                #lo_train_exps = [exp for exp in LO if exp in train_exps]
+                #se_train_exps = [exp for exp in SE if exp in train_exps]
+                #sv_train_exps = [exp for exp in SV if exp in train_exps]
+                
+                #for i in range(20): LO_score[i].append(self.Evaluate(lo_train_exps[:i+1],test_exps))
+                #for i in range(20): SE_score[i].append(self.Evaluate(se_train_exps[:i+1],test_exps))
+                #for i in range(20): SV_score[i].append(self.Evaluate(sv_train_exps[:i+1],test_exps))
         
+        for i,sc in enumerate(Scores):
+            print(str(i)+',', ','.join([str(mean(a)) for a in sc]))
+        print('RO,',','.join([str(mean(a)) for a in RO_score]))
+
+        for i,sc in enumerate(Scores):
+            print(str(i)+'-std,', ','.join([str(stdev(a)) for a in sc]))
+        print('RO-std,',','.join([str(stdev(a)) for a in RO_score]))
+
+        '''
         print('LO,',','.join([str(mean(a)) for a in LO_score]))
         print('SE,',','.join([str(mean(a)) for a in SE_score]))        
         print('SV,',','.join([str(mean(a)) for a in SV_score]))       
@@ -165,6 +164,7 @@ class GITI:
         print('SV-std,',','.join([str(stdev(a)) for a in SV_score]))
         print('SE-std,',','.join([str(stdev(a)) for a in SE_score]))
         print('RO-std,',','.join([str(stdev(a)) for a in RO_score]))
+        '''
     
         
         

@@ -10,7 +10,7 @@ import pickle
 
 from sklearn.svm import LinearSVC
 from sklearn.neural_network import MLPClassifier
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score,roc_auc_score
 
 from pytorch_pretrained_bert import BertTokenizer, BertModel
 
@@ -23,7 +23,11 @@ def Evaluate(model, x_train, y_train, x_test, y_test):
     rec = recall_score(y_test, predictions, average='binary')
     f1 = f1_score(y_test, predictions, average='binary')
     
-    return [acc,prec,rec,f1]
+    #pred_proba = [proba[1] for proba in model.predict_proba(x_test)]
+    #auc = roc_auc_score(y_test,pred_proba)
+    auc = roc_auc_score(y_test,predictions)
+    
+    return [str(round(acc,4)),str(round(prec,4)),str(round(rec,4)),str(round(f1,4)),str(round(auc,4))]
 
 def BERT(sent):
     tt = bt.tokenize("[CLS] "+sent+" [SEP]")
