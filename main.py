@@ -5,13 +5,14 @@ Created on Wed May 12 15:38:01 2021
 
 @author: vasu
 """
-from GITI import GITI
+from newGITI import GITI
 from TopicModel import TopicModel
 
 from collections import defaultdict
 from scipy.special import rel_entr
 from statistics import mean
 import argparse
+from scipy.stats import pearsonr,spearmanr
 
 
 def LoadVNC(cutoff):        
@@ -125,7 +126,7 @@ if __name__ == '__main__':
         traintext = LoadVNCTexts()
         TM = TopicModel()
         exps = [exp for exp in Data]
-        s = [getMeanILTopicDistSim() for _ in range(3)]
+        s = [getMeanILTopicDistSim() for _ in range(10)]
         ms = [mean(a) for a in zip(*s)]
         print(ms)
         print(getCorr(sv,ms))
@@ -137,9 +138,6 @@ if __name__ == '__main__':
         size_order = ['take root', 'have word', 'make mark', 'take heart', 'blow whistle', 'pull plug', 'hit wall', 'see star', 'find foot', 'pull leg', 'get sack', 'make scene', 'cut figure', 'make face', 'lose head', 'kick heel', 'pull weight', 'hit road', 'blow trumpet', 'blow top', 'get wind', 'make pile', 'hold fire', 'hit roof', 'make hay', 'make hit']
         iltopicdiv_order = ['take root', 'get sack', 'make hay', 'make pile', 'cut figure', 'make hit', 'hit wall', 'hit roof', 'hold fire', 'lose head', 'kick heel', 'blow trumpet', 'pull weight', 'blow top', 'make mark', 'make scene', 'see star', 'pull leg', 'pull plug', 'have word', 'hit road', 'take heart', 'find foot', 'get wind', 'blow whistle', 'make face']
         topicdiv_order = ['take root', 'pull plug', 'make mark', 'make pile', 'hit roof', 'make scene', 'have word', 'hit wall', 'take heart', 'blow whistle', 'blow top', 'blow trumpet', 'make hay', 'hit road', 'make hit', 'pull leg', 'cut figure', 'get sack', 'pull weight', 'see star', 'make face', 'kick heel', 'lose head', 'get wind', 'hold fire', 'find foot']
-        #se_order = ['blow whistle','hold fire','pull plug','pull weight','make mark','hit wall','blow trumpet','make pile','hit roof','kick heel','hit road','make hay','pull leg','take heart','get wind','make hit','take root','cut figure','find foot','get sack','blow top','have word','make scene','lose head','make face','see star']
-        #lo_order = ['see star','blow whistle','hit wall','make face','have word','make scene','make mark','blow top','get wind','pull leg','make pile','make hay','hold fire','make hit','take root','get sack','pull plug','lose head','take heart','hit road','hit roof','cut figure','blow trumpet','pull weight','find foot','kick heel']
-        #giti.getUnseenExpResults(lo_order,se_order,sv_order)
         giti.getUnseenExpResults([sv_order,fx_order,size_order,iltopicdiv_order,topicdiv_order])
     
     if args.opt=='SE':

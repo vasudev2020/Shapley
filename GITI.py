@@ -95,34 +95,33 @@ class GITI:
                     random.shuffle(p)
                     j = p.index(exp)
                     p[i],p[j] = p[j],p[i]
-
-                    #self.train([self.idioms[j] for j in p[:i+1]])
-                    #V += self.test(self.idioms)[2]
                     
                     V += self.Evaluate([self.exps[j] for j in p[:i+1]],self.exps)
                     if i==0:    continue
-                    #self.train([self.idioms[j] for j in p[:i]])
-                    #V -= self.test(self.idioms)[2]
+                    
                     V -= self.Evaluate([self.exps[j] for j in p[:i]],self.exps)
             SV[self.exps[exp]] = V / (len(self.exps)*self.t)
-            #sh.append(V / (len(self.exps)*self.t))
         return SV
+    
+    def UnseenEvaluate(self,tr_exps,ts_exps):
+        assert len(set(tr_exps)&set(ts_exps))==0
+        trainX = [self.getEmb(sent,'BERT11') for f in range(5) for exp in tr_exps for sent in self.XFolds[exp][f]]
+        trainY = [l for f in range(5) for exp in tr_exps for l in self.YFolds[exp][f]]
+    
+        testX = [self.getEmb(sent,'BERT11') for f in range(5) for exp in ts_exps for sent in self.XFolds[exp][f]]
+        testY = [l for f in range(5) for exp in ts_exps for l in self.YFolds[exp][f]]
+        
+        with warnings.catch_warnings():
+             filterwarnings("ignore", category=ConvergenceWarning)
+             self.mlp.fit(trainX,trainY)
+                
+        pred_proba = [proba[1] for proba in self.mlp.predict_proba(testX)]
+        return roc_auc_score(testY,pred_proba)
     
     #def getUnseenExpResults(self,LO,SE,SV):
     def getUnseenExpResults(self,Orders):
-        #LO = ['kick heel','have word','pull leg','make pile','blow whistle','get wind','make hay','blow trumpet','make face','hit road','pull punch','blow top','cut figure','get sack','get nod','see star','hit wall','hold fire','make hit','make scene','hit roof','pull plug','take heart','pull weight','make mark','lose thread','find foot','lose head']
-        #SE = ['pull plug','get wind','blow trumpet','hit road','kick heel','pull weight','blow whistle','hit roof','take heart','make pile','make hay','make mark','get sack','pull punch','blow top','cut figure','have word','lose thread','find foot','get nod','pull leg','make scene','make face','hold fire','lose head','hit wall','make hit','see star']
-        #SV = ['make mark','blow whistle','pull plug','blow trumpet','pull weight','make hay','hit roof','get wind','take heart','hit road','make pile','get sack','find foot','kick heel','make face','make scene','pull punch','blow top','lose thread','get nod','cut figure','pull leg','have word','hold fire','lose head','hit wall','make hit','see star']
-
-        #LO_score = [0.0]*20
-        #SE_score = [0.0]*20
-        #SV_score = [0.0]*20
-        #RO_score = [0.0]*20
         Scores = [[[] for _ in range(20)] for _ in range(len(Orders))]
-        
-        #LO_score = [[] for _ in range(20)]
-        #SE_score = [[] for _ in range(20)]
-        #SV_score = [[] for _ in range(20)]
+    
         RO_score = [[] for _ in range(20)]
         
         trials = 10
@@ -132,20 +131,14 @@ class GITI:
             for fold in range(5):
                 test_exps = [self.exps[i] for i in p[fold*5:(fold+1)*5]]
                 train_exps = [self.exps[i] for i in p[:fold*5]+p[(fold+1)*5:]]
-                for j in range(20): RO_score[j].append(self.Evaluate(train_exps[:j+1],test_exps))
+                #for j in range(20): RO_score[j].append(self.Evaluate(train_exps[:j+1],test_exps))
+                for j in range(20): RO_score[j].append(self.UnseenEvaluate(train_exps[:j+1],test_exps))
+                
                 for i,order in enumerate(Orders):
                     train_exps = [exp for exp in order if exp in train_exps]
-                    for j in range(20):
-                        Scores[i][j].append(self.Evaluate(train_exps[:j+1],test_exps))
-                        
-                #lo_train_exps = [exp for exp in LO if exp in train_exps]
-                #se_train_exps = [exp for exp in SE if exp in train_exps]
-                #sv_train_exps = [exp for exp in SV if exp in train_exps]
+                    #for j in range(20): Scores[i][j].append(self.Evaluate(train_exps[:j+1],test_exps))
+                    for j in range(20): Scores[i][j].append(self.UnseenEvaluate(train_exps[:j+1],test_exps))
                 
-                #for i in range(20): LO_score[i].append(self.Evaluate(lo_train_exps[:i+1],test_exps))
-                #for i in range(20): SE_score[i].append(self.Evaluate(se_train_exps[:i+1],test_exps))
-                #for i in range(20): SV_score[i].append(self.Evaluate(sv_train_exps[:i+1],test_exps))
-        
         for i,sc in enumerate(Scores):
             print(str(i)+',', ','.join([str(mean(a)) for a in sc]))
         print('RO,',','.join([str(mean(a)) for a in RO_score]))
@@ -154,17 +147,7 @@ class GITI:
             print(str(i)+'-std,', ','.join([str(stdev(a)) for a in sc]))
         print('RO-std,',','.join([str(stdev(a)) for a in RO_score]))
 
-        '''
-        print('LO,',','.join([str(mean(a)) for a in LO_score]))
-        print('SE,',','.join([str(mean(a)) for a in SE_score]))        
-        print('SV,',','.join([str(mean(a)) for a in SV_score]))       
-        print('RO,',','.join([str(mean(a)) for a in RO_score]))
-        
-        print('LO-std,',','.join([str(stdev(a)) for a in LO_score]))
-        print('SV-std,',','.join([str(stdev(a)) for a in SV_score]))
-        print('SE-std,',','.join([str(stdev(a)) for a in SE_score]))
-        print('RO-std,',','.join([str(stdev(a)) for a in RO_score]))
-        '''
+
     
         
         
