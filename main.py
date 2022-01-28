@@ -5,7 +5,7 @@ Created on Wed May 12 15:38:01 2021
 
 @author: vasu
 """
-from newGITI import GITI
+from GITI import GITI
 from TopicModel import TopicModel
 
 from collections import defaultdict
@@ -143,6 +143,14 @@ if __name__ == '__main__':
     if args.opt=='SE':
         giti=GITI(Data,Labels)
         giti.getSE()
+
+    if args.opt=='SeenSE':
+        giti=GITI(Data,Labels)
+        giti.getSeenSE()
+
+    if args.opt=='UnseenSE':
+        giti=GITI(Data,Labels)
+        giti.getUnseenSE()
         
     if args.opt=='LOO':
         giti.getLOO()

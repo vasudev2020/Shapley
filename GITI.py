@@ -22,7 +22,6 @@ import random
 from statistics import mean
 
 
-
 from Embedding import Embedding
 
 
@@ -75,6 +74,14 @@ class GITI:
     def getSE(self):
         print('SE')
         for exp in self.exps:   print(exp,self.Evaluate([exp],self.exps))
+        
+    def getSeenSE(self):
+        print('SeenSE')
+        for exp in self.exps:   print(exp,self.Evaluate([exp],[exp]))
+        
+    def getUnseenSE(self):
+        print('UnseenSE')
+        for exp in self.exps:   print(exp,self.Evaluate([exp],list(set(self.exps)-set([exp]))))
             
     def getLOO(self):
         print('LOO')

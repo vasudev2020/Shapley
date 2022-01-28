@@ -21,6 +21,8 @@ from sklearn.linear_model import SGDClassifier
 
 from pytorch_pretrained_bert import BertTokenizer, BertModel
 
+''' Class to train and evaluate general idiom token idenitification model 
+    on dataset used to evaluate state of the art model'''
 class GITISota:
     def __init__(self,data_file,idiom_file,emb='cmb_skip',model='MLP'):        
         dataset = pickle.load(open(data_file, "rb"), encoding='latin1')
@@ -134,11 +136,11 @@ class GITISota:
            self.train(train_idioms)
            print(self.idioms[i],", ",", ".join([str(a) for a in self.evaluate(train_idioms)]))
         
-    def Unseen6(self):
+    def Unseen6_old(self):
         p = list(range(len(self.idioms)))
         Result = [0]*6
-        #count = 50
-        count=2
+        count = 50
+        #count=2
         for _ in range(count):
             random.shuffle(p)
             self.train([self.idioms[j] for j in p[:22]])
@@ -147,30 +149,59 @@ class GITISota:
         for i in range(6):  Result[i] /= count
         print(Result)
         
+    def Unseen6(self):
+        p = list(range(len(self.idioms)))
+        Macro,Micro = [],[]
+        count = 50
+        #count=2
+        for _ in range(count):
+            random.shuffle(p)
+            self.train([self.idioms[j] for j in p[:22]])
+            result = self.evaluate([self.idioms[j] for j in p[:22]])
+            Macro.append(result[2])
+            Micro.append(result[3])
+        print('Micro',stat.mean(Micro),stat.stdev(Micro))
+        print('Macro',stat.mean(Macro),stat.stdev(Macro))
 
+        #for i in range(6):  Result[i] /= count
+        #print(Result)
 
-
-t0=time.time()       
-gid = GITISota("../Data/ID/vnics_dataset_full_ratio-split.pkl",'idioms.txt',emb='cmb_skip',model='SVM')
-gid.full()
-gid.Unseen6()
-print('Execution time:', time.time()-t0)
-
-t0=time.time()       
-gid = GITISota("../Data/ID/vnics_dataset_full_ratio-split.pkl",'idioms.txt',emb='cmb_skip',model='SGD')
-gid.full()
-gid.Unseen6()
-print('Execution time:', time.time()-t0)
-
-t0=time.time()       
-gid = GITISota("../Data/ID/vnics_dataset_full_ratio-split.pkl",'idioms.txt',emb='cmb_skip')
-gid.full()
-gid.Unseen6()
-print('Execution time:', time.time()-t0)
-
-t0=time.time()       
-gid = GITISota("../Data/ID/vnics_dataset_full_ratio-split.pkl",'idioms.txt',emb='bert')
-gid.full()
-gid.Unseen6()
-print('Execution time:', time.time()-t0)      
+'''To print seen scores'''
+def SeenScores():
+    t0=time.time()   
+    print('BERT-MlP')    
+    gid = GITISota("../Data/ID/vnics_dataset_full_ratio-split.pkl",'idioms.txt',emb='bert')
+    gid.full()
+    print('Execution time:', time.time()-t0)  
     
+    t0=time.time() 
+    print('Skipthought-MLP')          
+    gid = GITISota("../Data/ID/vnics_dataset_full_ratio-split.pkl",'idioms.txt',emb='cmb_skip')
+    gid.full()
+    print('Execution time:', time.time()-t0)      
+        
+    t0=time.time() 
+    print('Skipthought-MLP')          
+    gid = GITISota("../Data/ID/vnics_dataset_full_ratio-split.pkl",'idioms.txt',emb='cmb_skip',model='SVM')
+    gid.full()
+    print('Execution time:', time.time()-t0) 
+
+'''To print unseen scores'''
+def UnSeenScores():
+    t0=time.time()   
+    print('BERT-MlP')    
+    gid = GITISota("../Data/ID/vnics_dataset_full_ratio-split.pkl",'idioms.txt',emb='bert')
+    gid.Unseen6()
+    print('Execution time:', time.time()-t0)  
+    
+    t0=time.time() 
+    print('Skipthought-MLP')          
+    gid = GITISota("../Data/ID/vnics_dataset_full_ratio-split.pkl",'idioms.txt',emb='cmb_skip')
+    gid.Unseen6()
+    print('Execution time:', time.time()-t0)      
+        
+    t0=time.time() 
+    print('Skipthought-MLP')          
+    gid = GITISota("../Data/ID/vnics_dataset_full_ratio-split.pkl",'idioms.txt',emb='cmb_skip',model='SVM')
+    gid.Unseen6()
+    print('Execution time:', time.time()-t0)      
