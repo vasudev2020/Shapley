@@ -1,7 +1,7 @@
 # General idiom token identification model
 This repository contains:
 
-## GITISota:
+## GITISota.py
 experimentations to compare the proposed madel with state of the art model
 
 ## main.py
